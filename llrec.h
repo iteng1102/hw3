@@ -83,8 +83,20 @@ Node* llfilter(Node* head, Comp pred)
     //*********************************************
     // Provide your implementation below
     //*********************************************
-
-
+    if (head == nullptr){
+        return nullptr; //basecase
+    }
+    if (pred(head->val)){ //check is the value fits the pred 
+        Node* next = head->next;
+        delete head; 
+        return llfilter(next, pred); //go to next value and skips it
+    }
+    else{
+        head->next = llfilter(head->next, pred); //if doesn't fit, add it to list 
+        return head;
+    }
 }
+
+void llpivotHelper(Node *&head, Node *&smaller, Node *&larger, int pivot);
 
 #endif

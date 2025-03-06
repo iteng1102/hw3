@@ -2,6 +2,8 @@
 #define HEAP_H
 #include <functional>
 #include <stdexcept>
+#include <vector>
+#include <algorithm>
 
 template <typename T, typename PComparator = std::less<T> >
 class Heap
@@ -15,13 +17,17 @@ public:
    *          as an argument and returns a bool if the first argument has
    *          priority over the second.
    */
-  Heap(int m=2, PComparator c = PComparator());
+  Heap(int m=2, PComparator c = PComparator()): ary(m), compare(c){
+
+  }
 
   /**
   * @brief Destroy the Heap object
   * 
   */
-  ~Heap();
+  ~Heap(){
+
+  }
 
   /**
    * @brief Push an item to the heap
@@ -61,13 +67,76 @@ public:
 
 private:
   /// Add whatever helper functions and data members you need below
-
-
+  std::vector<T> data; 
+  void heapify(int idx);
+  void trickleUp(int idx);
+  //add data member for m-ary number and compare 
+  int ary; 
+  PComparator compare; 
 
 
 };
 
+
 // Add implementation of member functions here
+template <typename T, typename PComparator>
+void Heap<T,PComparator>::push(const T& item){
+  data.push_back(item); //pushes item back and then trickup to maintain heap 
+  trickleUp(data.size()-1);
+}
+
+template <typename T, typename PComparator>
+bool Heap<T,PComparator>::empty() const{
+  return data.empty();
+}
+
+template <typename T, typename PComparator>
+size_t  Heap<T,PComparator>::size() const{
+  return data.size();
+}
+
+template <typename T, typename PComparator>
+void  Heap<T,PComparator>::heapify(int idx){
+  int best = idx; //set best to current index 
+  for (int i = 1; i <=ary; i++){ //goes through every child and see if it's better than current index 
+    size_t child = ary*idx+i;
+    if (child>=size()){
+      break; //breks if child is bigger than data size 
+    }
+    //cout <<"current child" << data[child] << endl;
+    if(compare(data[child], data[best])){ //compare child to best using compare operator 
+      best = child; 
+      //cout << "current best" << best << endl;
+    }
+  }
+  //cout << "current best" << best << endl;
+  if (best!=idx){ //switch if current best is different from index 
+    std::swap(data[best], data[idx]);
+    heapify(best); //call recursion to heapify best 
+  }
+}
+
+template <typename T, typename PComparator>
+void  Heap<T,PComparator>::trickleUp(int idx){
+  /*int parent = idx/2;
+  while (parent>=1 && data[idx]<data[parent]){
+    swap(data[parent], data[idx]);
+    idx = parent; 
+    parent = idx/2;
+  }*/
+  //int parent = ((idx-1)/ary);
+  while (idx>0){ 
+    int parent = (idx-1)/ary;
+    //cout << "this is the parent" << data[parent] <<endl;
+    if (compare(data[idx], data[parent])){ //compares index with parent 
+      std::swap(data[parent], data[idx]); //switch if greater/less than parent 
+      idx = parent; //move on to parent 
+    }
+    else{
+      break; //stop when nth happens 
+    }
+  }
+}
 
 
 // We will start top() for you to handle the case of 
@@ -81,13 +150,13 @@ T const & Heap<T,PComparator>::top() const
     // ================================
     // throw the appropriate exception
     // ================================
+    throw std::out_of_range("Tried to access top of empty heap");
 
 
   }
   // If we get here we know the heap has at least 1 item
   // Add code to return the top element
-
-
+  return data[0];
 
 }
 
@@ -97,16 +166,22 @@ T const & Heap<T,PComparator>::top() const
 template <typename T, typename PComparator>
 void Heap<T,PComparator>::pop()
 {
+  //cout << size() << endl;
   if(empty()){
     // ================================
     // throw the appropriate exception
     // ================================
-
-
+    throw std::out_of_range("Tried to pop an empty heap");
   }
-
-
-
+  if (data.size()==1){
+    data.pop_back();
+    return;
+  }
+  else{
+    std::swap(data[0], data[data.size()-1]); //swap first value with last and pop last value 
+    data.pop_back();
+    heapify(0); //heapify from first value 
+  }
 }
 
 
