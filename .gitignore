@@ -1,2 +1,13 @@
 *.o
 llrec-test
+llrec-test.cpp
+llrec-test1.in
+heap_test.cpp
+hw3_tests/
+logicsim/logicsim
+logicsim/my_and.png
+logicsim/my_and.uml
+logicsim/my_not.png
+logicsim/my_not.uml
+stack.cpp
+test
